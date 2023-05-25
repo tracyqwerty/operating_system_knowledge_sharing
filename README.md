@@ -13,7 +13,7 @@ BaseCode: https://github.com/Berkeley-CS162
 
 Basic usage of c, combined with I/O, editor, gdb and other useful tools.
 
-Personally I would recommend:
+Personally I would recommend go through these before we start: 
 
 * basic vim usage: http://www2.geog.ucl.ac.uk/~plewis/teaching/unix/vimtutor
 
@@ -143,5 +143,218 @@ In Unix-based systems, there are two types of limits that can be set for a user:
 For example, suppose we have a user limit for open files, with a soft limit of 1024 and a hard limit of 2048. This means that by default, a user can open up to 1024 files simultaneously. However, the user can increase this limit up to 2048 (the hard limit) if they need to. But once they do so, they can't go back to the previous limit without superuser intervention.
 
 These limits are used for managing resources on a system and ensuring that a single user or process can't consume too much of a resource and thereby impact other users or processes. They also provide a way for users to manage their own resource use.
+
+
+
+Everything else we need to know are in `man getlimit`.
+
+
+
+Also here're some tips:
+
+` if (getrlimit(RLIMIT_NOFILE, &rlim) == 1) perror("getLimit")`
+
+`perror("getrlimit")` is a function provided by the C standard library that prints an error message corresponding to the current value of the `errno` variable. The `getrlimit` function sets the `errno` variable if it encounters an error.
+
+In the code snippet `perror("getrlimit")`, the string `"getrlimit"` is passed as an argument to `perror()`. This string is typically used to provide additional context or description about the error being reported.
+
+When `perror()` is called, it looks at the value of `errno` and prints a descriptive error message to the standard error stream (stderr), along with the provided string and a colon. For example, it might output something like:
+
+```
+getrlimit: Invalid argument
+```
+
+The specific error message depends on the value of `errno`, which is set by the system or library function that encountered the error. In the case of `getrlimit()`, it could indicate an invalid argument, insufficient privileges, or other possible errors.
+
+Using `perror()` is a convenient way to print descriptive error messages related to system or library function failures, allowing you to provide more information about what went wrong during program execution.
+
+#### GDB Basics
+
+Manuall: http://www.unknownroad.com/rtfm/gdbtut/gdbtoc.html
+
+Offical documentation: https://www.sourceware.org/gdb/documentation/
+
+Also here're the tips:
+
+`printf("%i%p", ...)`
+
+In the `printf` function in C, `%i` and `%p` are format specifiers used to display integers and pointers, respectively.
+
+- `%i`: This format specifier is used to print integers. It can **handle both signed and unsigned integer values**. When using `%i`, the corresponding argument in the `printf` function should be an integer value.
+- `%p`: This format specifier is used to print pointers. It is typically used to **display the memory address represented by a pointer variable**. When using `%p`, the corresponding argument in the `printf` function should be a pointer value.
+
+
+
+**Difference between `step` and `next`:**
+
+1. **step (`s`)**: The `step` command is used to step through the program one line at a time. If the current line contains a function call, the `step` command will enter that function and allow you to step through its code as well. It means that if the line being executed contains a function call, GDB will move to the first line of the called function and pause there.
+
+2. **next (`n`)**: The `next` command is used to execute the next line of code in the program without stepping into any function calls. If the current line contains a function call, the `next` command will execute that entire function without entering it. It means that if the line being executed contains a function call, GDB will execute the entire function as a single step and pause at the next line after the function call.
+
+
+
+Also here's a demo with explanation.
+```shell
+fudanicpc@cat:~/Desktop/student0-main/hw-intro$ gdb map
+Reading symbols from map...done.
+(gdb) break map.c:6
+# 0x699: The memory address where line 6 resides in the compiled program.
+Breakpoint 1 at 0x699: file map.c, line 6.
+(gdb) break map.c:7
+Note: breakpoint 1 also set at pc 0x699.
+Breakpoint 2 at 0x699: file map.c, line 7.
+(gdb) break recurse.c:7
+Breakpoint 6 at 0x6f9: file recurse.c, line 7.
+(gdb) run
+Starting program: /home/fudanicpc/Desktop/student0-main/hw-intro/map
+
+.....
+
+(gdb) run
+Starting program: /home/fudanicpc/Desktop/student0-main/hw-intro/map
+
+Breakpoint 1, main (argc=1, argv=0x7fffffffdee8) at map.c:16
+16	    volatile int i = 0;
+(gdb) print(i)
+$1 = 0
+(gdb) print(i)
+$2 = 0
+(gdb) p i
+$3 = 0
+(gdb) p x
+No symbol "x" in current context.
+(gdb) backtrace
+#0  main (argc=1, argv=0x7fffffffdee8) at map.c:19
+(gdb) kill
+Kill the program being debugged? (y or n) y
+(gdb) 
+```
+
+
+
+let's take a peek at [map's assembly code](materials/map.s) : 
+
+1. `.file "map.c"`: Specifies the name of the source file.
+
+2. `.text`: Indicates the start of the text (code) section.
+
+3. `.comm foo,4,4`: Declares a common symbol `foo` with a size of 4 bytes and alignment of 4 bytes. Common symbols are global variables that may be defined in multiple translation units, and the final definition is resolved during linking.
+
+4. `.globl stuff`: Declares the symbol `stuff` as a global symbol, meaning it can be accessed from other translation units.
+
+5. `.data`: Indicates the start of the data section.
+
+6. `.align 4`: Aligns the following data on a 4-byte boundary.
+
+7. `.type stuff, @object`: Specifies that the symbol `stuff` is of type "object".
+
+8. `.size stuff, 4`: Specifies the size of the `stuff` object as 4 bytes.
+
+9. `stuff: .long 7`: Defines the `stuff` object and initializes it with the value 7.
+
+10. `.text`: Indicates the start of the text (code) section again.
+
+11. `.globl main`: Declares the symbol `main` as a global symbol.
+
+12. `.type main, @function`: Specifies that the symbol `main` is of type "function".
+
+13. `.LFB5`: Indicates the start of a function named `.LFB5`.
+
+14. `.cfi_startproc`: Specifies the start of a new procedure for Call Frame Information (CFI).
+
+15. `pushq %rbp`: Pushes the value of the base pointer onto the stack.
+
+16. `.cfi_def_cfa_offset 16`: Defines the Canonical Frame Address (CFA) offset.
+
+17. `.cfi_offset 6, -16`: Specifies the offset of the saved base pointer.
+
+18. `movq %rsp, %rbp`: Moves the value of the stack pointer to the base pointer.
+
+19. `.cfi_def_cfa_register 6`: Defines the base pointer as the Canonical Frame Address (CFA) register.
+
+20. `subq $48, %rsp`: Allocates 48 bytes of space on the stack for local variables.
+
+21. `movl %edi, -36(%rbp)`: Moves the value of the first function argument (`%edi`) to a specific location on the stack.
+
+22. `movq %rsi, -48(%rbp)`: Moves the value of the second function argument (`%rsi`) to a specific location on the stack.
+
+23. `movl $0, -20(%rbp)`: Moves the value 0 to a specific location on the stack.
+
+24. `movl $100, %edi`: Moves the value 100 to the `%edi` register.
+
+25. `call malloc@PLT`: Calls the `malloc` function to allocate memory for 100 bytes.
+
+26. `movq %rax, -16(%rbp)`: Moves the returned value from `malloc` to a specific location on the stack.
+
+27. `movl $3, %edi`: Moves the value 3 to the `%edi` register.
+
+28. `call recur@PLT`: Calls the `recur` function.
+
+29. `movl $0, %eax`: Moves the value 0 to the `%eax` register.
+
+30. `leave`: Restores the stack frame by setting the stack pointer to the base pointer.
+
+31. `.cfi_def_cfa 7, 
+
+
+
+Then [the object accordingly(already processed by `objdump -D `)](materials/map.o) : 
+
+1. Disassembly of section .text: This section contains the disassembly of the code section.
+2. `<main>:`, `0: push %rbp`, `1: mov %rsp, %rbp`, etc.: These lines represent the disassembled instructions of the `main` function. Each line corresponds to a machine instruction along with its hexadecimal address.
+3. `push %rbp`, `mov %rsp, %rbp`, `sub $0x30, %rsp`, etc.: These instructions set up the function's stack frame by saving the base pointer, adjusting the stack pointer, and allocating space for local variables.
+4. `<stuff>:`, `0: 07`, `1: 00 00`, etc.: These lines represent the disassembly of the `.data` section. It shows the hexadecimal values of the bytes stored in the `stuff` object.
+5. Disassembly of section .comment: This section contains some compiler and linker-generated comments.
+6. Disassembly of section .eh_frame: This section contains information related to Exception Handling (EH) and stack unwinding.
+
+or use `objdump -h` to show the ELF:
+
+```
+fudanicpc@cat:~/Desktop/student0-main/hw-intro$ objdump -h map.o
+
+map.o:     file format elf64-x86-64
+
+Sections:
+Idx Name          Size      VMA               LMA               File off  Algn
+  0 .text         00000043  0000000000000000  0000000000000000  00000040  2**0
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
+  1 .data         00000004  0000000000000000  0000000000000000  00000084  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000000  0000000000000000  0000000000000000  00000088  2**0
+                  ALLOC
+  3 .comment      00000025  0000000000000000  0000000000000000  00000088  2**0
+                  CONTENTS, READONLY
+  4 .note.GNU-stack 00000000  0000000000000000  0000000000000000  000000ad  2**0
+                  CONTENTS, READONLY
+  5 .eh_frame     00000038  0000000000000000  0000000000000000  000000b0  2**3
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, DATAs
+```
+
+Here's an explanation of the columns:
+
+- `Idx`: The index of the section.
+- `Name`: The name of the section.
+- `Size`: The size of the section in bytes.
+- `VMA`: The virtual memory address of the section.
+- `LMA`: The load memory address of the section.
+- `File off`: The offset of the section in the file.(offset: an integer indicating the distance (displacement) between the beginning of the object and a given element or point, presumably within the same object.)
+- `Algn`: The alignment requirement of the section.
+
+Here's a breakdown of the sections in the `map.o` file:
+
+1. `.text`(code/text segment): This section contains the executable code of the program. It is marked as CONTENTS, ALLOC, LOAD, RELOC, READONLY, and CODE. It has a size of `00000043` bytes.
+2. `.data`: This section contains initialized global and static data. It is marked as CONTENTS, ALLOC, LOAD, and DATA. It has a size of `00000004` bytes.
+3. `.bss`(Block Started by Symbol): This section represents uninitialized global and static data. It is marked as ALLOC. It has a size of `00000000` bytes.
+4. `.comment`: This section contains compiler-generated comments. It is marked as CONTENTS and READONLY. It has a size of `00000025` bytes.
+5. `.note.GNU-stack`: This section provides information about the GNU stack usage. It is marked as CONTENTS and READONLY. It has a size of `00000000` bytes.
+6. `.eh_frame`: This section contains exception handling and stack unwinding information. It is marked as CONTENTS, ALLOC, LOAD, RELOC, READONLY, and DATA. It has a size of `00000038` bytes.
+
+Also plz note that the output of `objdump -h` for an object file typically **does not include a specific section for the heap because the heap is managed by the dynamic memory allocation functions (`malloc`, `free`, etc.) provided by the C runtime library.**
+
+In the output you provided for `map.o`, you can see sections such as `.text`, `.data`, `.bss`, `.comment`, `.note.GNU-stack`, and `.eh_frame`. These sections represent parts of the object file related to the program's code, initialized data, uninitialized data, comments, stack unwinding, and stack-related information.
+
+The heap, on the other hand, is managed at runtime by the C runtime library using memory allocation functions like `malloc`. The memory allocated on the heap is not directly represented as a section in the object file itself. Instead, it is managed dynamically during program execution by the runtime environment.
+
+Therefore, when inspecting the object file with `objdump`, you won't see a specific section dedicated to the heap. The allocation and management of heap memory occur during runtime and are not directly reflected in the object file.
 
 ## MIT 6.S081
