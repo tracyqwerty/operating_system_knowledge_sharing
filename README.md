@@ -3,6 +3,8 @@ OS self-learning material. Powered by ChatGPT4 >w<
 
 ## UCB CS162
 
+Based on Fall 2022.
+
 Lectures: https://www.youtube.com/watch?v=4FpG1DcvHzc&list=PLMcZASLnrVs5qyBC-dc4bFRtC8ROPYmS0&index=2
 
 Website: https://inst.eecs.berkeley.edu/~cs162/fa22/
@@ -232,6 +234,8 @@ Kill the program being debugged? (y or n) y
 
 
 
+#### From Source Code to Executable
+
 let's take a peek at [map's assembly code](materials/map.s) : 
 
 1. `.file "map.c"`: Specifies the name of the source file.
@@ -356,5 +360,117 @@ In the output you provided for `map.o`, you can see sections such as `.text`, `.
 The heap, on the other hand, is managed at runtime by the C runtime library using memory allocation functions like `malloc`. The memory allocated on the heap is not directly represented as a section in the object file itself. Instead, it is managed dynamically during program execution by the runtime environment.
 
 Therefore, when inspecting the object file with `objdump`, you won't see a specific section dedicated to the heap. The allocation and management of heap memory occur during runtime and are not directly reflected in the object file.
+
+Also:
+
+```
+fudanicpc@cat:~/Desktop/student0-main/hw-intro$ objdump -t map.o
+
+map.o:     file format elf64-x86-64
+
+SYMBOL TABLE:
+0000000000000000 l    df *ABS*	0000000000000000 map.c
+0000000000000000 l    d  .text	0000000000000000 .text
+0000000000000000 l    d  .data	0000000000000000 .data
+0000000000000000 l    d  .bss	0000000000000000 .bss
+0000000000000000 l    d  .note.GNU-stack	0000000000000000 .note.GNU-stack
+0000000000000000 l    d  .eh_frame	0000000000000000 .eh_frame
+0000000000000000 l    d  .comment	0000000000000000 .comment
+0000000000000004       O *COM*	0000000000000004 foo
+0000000000000000 g     O .data	0000000000000004 stuff
+0000000000000000 g     F .text	0000000000000043 main
+0000000000000000         *UND*	0000000000000000 _GLOBAL_OFFSET_TABLE_
+0000000000000000         *UND*	0000000000000000 malloc
+0000000000000000         *UND*	0000000000000000 recur
+```
+
+In this symbol table, each line represents a symbol entry. Here's an explanation of each column:
+
+- The first column represents the symbol's address or offset. This is the first set of digits (all zeros in this case). In a relocatable object file, **these will typically be zeros because the final address hasn't been determined yet**. **Once the object file is linked into an executable or a library, each symbol will be given a unique address in memory where it resides.**
+- The second column represents the symbol's visibility. `l` indicates a local symbol, and `g` indicates a global symbol. If empty, it means that the visibility of the symbol is not explicitly specified. 
+- The third column represents the symbol's type. `F` indicates a function symbol, `O` indicates an object/data symbol, and `*UND*` indicates an undefined symbol. `d`indicates that the symbol is a debugging symbol.
+- The fourth column represents the size. This value represents the size of the symbol in bytes. For example, for the `main` function, the size is `43`, which in hexadecimal translates to 67 bytes in decimal.
+- The last column represents the symbol's name.
+
+Based on this table, you can see the symbols `foo`, `stuff`, `main`, `_GLOBAL_OFFSET_TABLE_`, `malloc`, and `recur`, along with their respective attributes.
+
+### Pj0: Introduction to Pintos
+
+This is the pintos manual: https://cs162.org/static/proj/pintos-docs/
+
+Do plz set the environment variable.
+```
+export PATH=/home/fudanicpc/Desktop/group0-main/src/utils:$PATH
+```
+
+```
+fudanicpc@cat:~/Desktop/group0-main/src/threads$ ../utils/pintos run alarm-multiple
+warning: can't find squish-pty, so terminal input will fail
+bochs -q
+========================================================================
+                        Bochs x86 Emulator 2.6
+            Built from SVN snapshot on September 2nd, 2012
+========================================================================
+```
+
+```bash
+fudanicpc@cat:~/Desktop/group0-main/src/userprog$ make check
+cd build && make check
+make[1]: Entering directory '/home/fudanicpc/Desktop/group0-main/src/userprog/build'
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/do-nothing -a do-nothing -- -q   -f run do-nothing < /dev/null 2> tests/userprog/do-nothing.errors > tests/userprog/do-nothing.output
+perl -I../.. ../../tests/userprog/do-nothing.ck tests/userprog/do-nothing tests/userprog/do-nothing.result
+FAIL tests/userprog/do-nothing
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  do-nothing: exit(162)
+Differences in `diff -u' format:
+- do-nothing: exit(162)
++ Page fault at 0xc0000008: rights violation error reading page in user context.
++ do-nothing: dying due to interrupt 0x0e (#PF Page-Fault Exception).
++ Interrupt 0x0e (#PF Page-Fault Exception) at eip=0x80488ee
++  cr2=c0000008 error=00000005
++  eax=00000000 ebx=00000000 ecx=00000000 edx=00000000
++  esi=00000000 edi=00000000 esp=bfffffe4 ebp=bffffffc
++  cs=001b ds=0023 es=0023 ss=0023
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/stack-align-0 -a stack-align-0 -- -q   -f run stack-align-0 < /dev/null 2> tests/userprog/stack-align-0.errors > tests/userprog/stack-align-0.output
+perl -I../.. ../../tests/userprog/stack-align-0.ck tests/userprog/stack-align-0 tests/userprog/stack-align-0.result
+FAIL tests/userprog/stack-align-0
+Test output failed to match any acceptable form.
+```
+
+```bash
+fudanicpc@cat:~/Desktop/group0-main/src/userprog/build/tests/userprog$ objdump -d do-nothing | less
+```
+
+```assembly
+080488e8 <_start>:
+ 80488e8:       55                      push   %ebp
+ 80488e9:       89 e5                   mov    %esp,%ebp
+ 80488eb:       83 ec 18                sub    $0x18,%esp
+ 80488ee:       8b 45 0c                mov    0xc(%ebp),%eax
+ 80488f1:       89 44 24 04             mov    %eax,0x4(%esp)
+ 80488f5:       8b 45 08                mov    0x8(%ebp),%eax
+ 80488f8:       89 04 24                mov    %eax,(%esp)
+ 80488fb:       e8 94 f7 ff ff          call   8048094 <main>
+ 8048900:       89 04 24                mov    %eax,(%esp)
+ 8048903:       e8 d3 21 00 00          call   804aadb <exit>
+```
+
+**Explanation:**
+
+From the disassembled code you provided, it looks like the function the program was in when it crashed was `_start`.
+
+The instruction that resulted in the crash appears to be at address `0x80488ee`:
+
+```assembly
+80488ee:       8b 45 0c                mov    0xc(%ebp),%eax    ;argv
+```
+
+This instruction is attempting to move the value at the memory location given by `(%ebp + 0xc)` into the `eax` register. Here, `(%ebp + 0xc)` is intended to represent the location of the second argument passed to `_start`, which should be `argv`, the pointer to the array of command-line argument strings.
+
+It appears that there is a problem with this memory access, perhaps because the memory location at `(%ebp + 0xc)` is not mapped to a valid memory page or because the program doesn't have the correct permissions to access that location. This causes the page fault and leads to the segmentation fault.
+
+It's also possible that the issue arises because the `_start` function is improperly handling its arguments. In a typical C environment, the operating system's kernel sets up the stack so that when `_start` is called, it can access `argc` (the count of command-line arguments) and `argv` (the array of command-line arguments). If Pintos is not correctly setting up the stack or if `_start` is not correctly accessing these values, that could lead to this sort of issue. You'll need to investigate further to confirm what's going wrong.
 
 ## MIT 6.S081
