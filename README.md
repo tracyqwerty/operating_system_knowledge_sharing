@@ -394,7 +394,9 @@ In this symbol table, each line represents a symbol entry. Here's an explanation
 
 Based on this table, you can see the symbols `foo`, `stuff`, `main`, `_GLOBAL_OFFSET_TABLE_`, `malloc`, and `recur`, along with their respective attributes.
 
-### Pj0: Introduction to Pintos
+### Pj0: 
+
+#### Introduction to Pintos
 
 This is the pintos manual: https://cs162.org/static/proj/pintos-docs/
 
