@@ -18,6 +18,7 @@ Basic usage of c, combined with I/O, editor, gdb and other useful tools.
 Personally I would recommend go through these before we start: 
 
 * basic vim usage: http://www2.geog.ucl.ac.uk/~plewis/teaching/unix/vimtutor
+* tmux usage(in chinese): https://www.ruanyifeng.com/blog/2019/10/tmux.html
 
 #### Counting Words
 
@@ -423,6 +424,8 @@ Based on this table, you can see the symbols `foo`, `stuff`, `main`, `_GLOBAL_OF
 
 https://blog.csdn.net/ingsuifon/article/details/125507849
 
+Also, I personally recommend read CSAPP chapter3 beforehand, if you have little knowledge of machine-level language as I do. : ) 
+
 #### Find the Faulting Instruction
 
 This is the pintos manual: https://cs162.org/static/proj/pintos-docs/
@@ -434,78 +437,16 @@ export PATH=/home/fudanicpc/Desktop/student0-main/proj-pregame/src/utils:$PATH
 
 fudanicpc@cat:~/Desktop/student0-main/proj-pregame/src/utils$ pwd
 export PATH=/home/fudanicpc/Desktop/student0-main/proj-pregame/src/utils:$PATH
-
 ```
+Tips:
 
-```
-fudanicpc@cat:~/Desktop/group0-main/src/threads$ ../utils/pintos run alarm-multiple
-warning: can't find squish-pty, so terminal input will fail
-bochs -q
-========================================================================
-                        Bochs x86 Emulator 2.6
-            Built from SVN snapshot on September 2nd, 2012
-========================================================================
-```
+* The ebp register, also known as the base pointer or frame pointer, usually points to the base of the current function's stack frame.
 
-```bash
-fudanicpc@cat:~/Desktop/group0-main/src/userprog$ make check
-cd build && make check
-make[1]: Entering directory '/home/fudanicpc/Desktop/group0-main/src/userprog/build'
-pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/do-nothing -a do-nothing -- -q   -f run do-nothing < /dev/null 2> tests/userprog/do-nothing.errors > tests/userprog/do-nothing.output
-perl -I../.. ../../tests/userprog/do-nothing.ck tests/userprog/do-nothing tests/userprog/do-nothing.result
-FAIL tests/userprog/do-nothing
-Test output failed to match any acceptable form.
+* ebp + 4 is used to access the return address of the function.
 
-Acceptable output:
-  do-nothing: exit(162)
-Differences in `diff -u' format:
-- do-nothing: exit(162)
-+ Page fault at 0xc0000008: rights violation error reading page in user context.
-+ do-nothing: dying due to interrupt 0x0e (#PF Page-Fault Exception).
-+ Interrupt 0x0e (#PF Page-Fault Exception) at eip=0x80488ee
-+  cr2=c0000008 error=00000005
-+  eax=00000000 ebx=00000000 ecx=00000000 edx=00000000
-+  esi=00000000 edi=00000000 esp=bfffffe4 ebp=bffffffc
-+  cs=001b ds=0023 es=0023 ss=0023
-pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/userprog/stack-align-0 -a stack-align-0 -- -q   -f run stack-align-0 < /dev/null 2> tests/userprog/stack-align-0.errors > tests/userprog/stack-align-0.output
-perl -I../.. ../../tests/userprog/stack-align-0.ck tests/userprog/stack-align-0 tests/userprog/stack-align-0.result
-FAIL tests/userprog/stack-align-0
-Test output failed to match any acceptable form.
-```
+* ebp + 8 is used to access the first argument passed to the function (argc in this case).
 
-```bash
-fudanicpc@cat:~/Desktop/group0-main/src/userprog/build/tests/userprog$ objdump -d do-nothing | less
-```
-
-```assembly
-080488e8 <_start>:
- 80488e8:       55                      push   %ebp
- 80488e9:       89 e5                   mov    %esp,%ebp
- 80488eb:       83 ec 18                sub    $0x18,%esp
- 80488ee:       8b 45 0c                mov    0xc(%ebp),%eax
- 80488f1:       89 44 24 04             mov    %eax,0x4(%esp)
- 80488f5:       8b 45 08                mov    0x8(%ebp),%eax
- 80488f8:       89 04 24                mov    %eax,(%esp)
- 80488fb:       e8 94 f7 ff ff          call   8048094 <main>
- 8048900:       89 04 24                mov    %eax,(%esp)
- 8048903:       e8 d3 21 00 00          call   804aadb <exit>
-```
-
-**Explanation:**
-
-From the disassembled code you provided, it looks like the function the program was in when it crashed was `_start`.
-
-The instruction that resulted in the crash appears to be at address `0x80488ee`:
-
-```assembly
-80488ee:       8b 45 0c                mov    0xc(%ebp),%eax    ;argv
-```
-
-This instruction is attempting to move the value at the memory location given by `(%ebp + 0xc)` into the `eax` register. Here, `(%ebp + 0xc)` is intended to represent the location of the second argument passed to `_start`, which should be `argv`, the pointer to the array of command-line argument strings.
-
-It appears that there is a problem with this memory access, perhaps because the memory location at `(%ebp + 0xc)` is not mapped to a valid memory page or because the program doesn't have the correct permissions to access that location. This causes the page fault and leads to the segmentation fault.
-
-It's also possible that the issue arises because the `_start` function is improperly handling its arguments. In a typical C environment, the operating system's kernel sets up the stack so that when `_start` is called, it can access `argc` (the count of command-line arguments) and `argv` (the array of command-line arguments). If Pintos is not correctly setting up the stack or if `_start` is not correctly accessing these values, that could lead to this sort of issue. 
+* ebp + 12 (or ebp + 0xc in hexadecimal) is used to access the second argument (argv in this case).
 
 #### Step through the crash
 
