@@ -11,7 +11,7 @@ Website: https://inst.eecs.berkeley.edu/~cs162/fa22/
 
 BaseCode: https://github.com/Berkeley-CS162
 
-### Hw1: Intro
+### Hw0: Intro
 
 Basic usage of c, combined with I/O, editor, gdb and other useful tools.
 
@@ -420,6 +420,8 @@ In this symbol table, each line represents a symbol entry. Here's an explanation
 
 Based on this table, you can see the symbols `foo`, `stuff`, `main`, `_GLOBAL_OFFSET_TABLE_`, `malloc`, and `recur`, along with their respective attributes.
 
+### Hw1:Lists
+
 ### Pj0: 
 
 https://blog.csdn.net/ingsuifon/article/details/125507849
@@ -450,6 +452,7 @@ Tips:
 
 #### Step through the crash
 
-
+Tips:
+Remember to modify src/utils/pintos-gdb. Customize GDBMACROS. set the file to enable `debugpintos`. It will look something like: https://github.com/Berkeley-CS162/vagrant/blob/15096a1cac8e77a252bd24a4308355dd16d67560/modules/cs162/files/shell/bin/gdb-macros
 
 ## MIT 6.S081
