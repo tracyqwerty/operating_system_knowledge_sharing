@@ -456,3 +456,12 @@ Tips:
 Remember to modify src/utils/pintos-gdb. Customize GDBMACROS. set the file to enable `debugpintos`. It will look something like: https://github.com/Berkeley-CS162/vagrant/blob/15096a1cac8e77a252bd24a4308355dd16d67560/modules/cs162/files/shell/bin/gdb-macros
 
 ## MIT 6.S081
+
+## Books
+
+[Operating Systems: Three Easy Pieces](https://pages.cs.wisc.edu/~remzi/OSTEP/)
+
+[Operating System Concepts](https://os-book.com/)
+
+Modern Operating Systems
+
