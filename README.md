@@ -457,9 +457,19 @@ Remember to modify src/utils/pintos-gdb. Customize GDBMACROS. set the file to en
 
 ## MIT 6.S081
 
-## Books
+## OSTEP
 
-[Operating Systems: Three Easy Pieces](https://pages.cs.wisc.edu/~remzi/OSTEP/)
+Operating Systems: Three Easy Pieces, friendly to beginners >w<
+
+Offitial Website: https://pages.cs.wisc.edu/~remzi/OSTEP/
+
+Personal Note click [here](OSTEP)
+
+
+
+
+
+## FYI
 
 [Operating System Concepts](https://os-book.com/)
 
