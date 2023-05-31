@@ -463,11 +463,9 @@ Operating Systems: Three Easy Pieces, friendly to beginners >w<
 
 Offitial Website: https://pages.cs.wisc.edu/~remzi/OSTEP/
 
-Personal Note click [here](OSTEP)
+Codes in Each Chapter: https://github.com/remzi-arpacidusseau/ostep-code
 
-
-
-
+My Personal Note: click [here](OSTEP)
 
 ## FYI
 
