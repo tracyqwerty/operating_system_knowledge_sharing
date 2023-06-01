@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "lldb",
+      "request": "launch",
+      "args": [],
+      "cwd": "/Users/tracyqwerty/Desktop/operating_system_knowledge_sharing/OSTEP/homework",
+      "program": "/Users/tracyqwerty/Desktop/operating_system_knowledge_sharing/OSTEP/homework/build/Debug/outDebug"
+    }
+  ]
+}
