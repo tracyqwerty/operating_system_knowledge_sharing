@@ -6,8 +6,8 @@
       "type": "lldb",
       "request": "launch",
       "args": [],
-      "cwd": "/Users/tracyqwerty/Desktop/OperatingSystemsThreeEasyPieces/examples",
-      "program": "/Users/tracyqwerty/Desktop/OperatingSystemsThreeEasyPieces/examples/build/Debug/outDebug"
+      "cwd": "/Users/tracyqwerty/Desktop/operating_system_knowledge_sharing/OSTEP/examples",
+      "program": "/Users/tracyqwerty/Desktop/operating_system_knowledge_sharing/OSTEP/examples/build/Debug/outDebug"
     }
   ]
 }
