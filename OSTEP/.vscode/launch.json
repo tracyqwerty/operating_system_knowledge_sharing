@@ -6,8 +6,8 @@
       "type": "lldb",
       "request": "launch",
       "args": [],
-      "cwd": "/Users/tracyqwerty/Desktop/operating_system_knowledge_sharing/OSTEP/homework",
-      "program": "/Users/tracyqwerty/Desktop/operating_system_knowledge_sharing/OSTEP/homework/build/Debug/outDebug"
+      "cwd": "/Users/tracyqwerty/Desktop/operating_system_knowledge_sharing/OSTEP",
+      "program": "/Users/tracyqwerty/Desktop/operating_system_knowledge_sharing/OSTEP/build/Debug/outDebug"
     }
   ]
 }
