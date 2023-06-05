@@ -1,7 +1,9 @@
 # Operating System Knowledge Sharing
 OS self-learning material. Powered by ChatGPT4 >w<
 
-## UCB CS162
+## Courses
+
+### UCB CS162
 
 Based on Fall 2022.
 
@@ -455,9 +457,17 @@ Tips:
 Tips:
 Remember to modify src/utils/pintos-gdb. Customize GDBMACROS. set the file to enable `debugpintos`. It will look something like: https://github.com/Berkeley-CS162/vagrant/blob/15096a1cac8e77a252bd24a4308355dd16d67560/modules/cs162/files/shell/bin/gdb-macros
 
-## MIT 6.S081
+### MIT 6.S081
 
-## OSTEP
+Official Website: https://pdos.csail.mit.edu/6.S081/2020/
+
+Environment Setup: https://zhuanlan.zhihu.com/p/464386728
+
+My Personal Note: click [here](6.S081)
+
+## Books
+
+### OSTEP
 
 Operating Systems: Three Easy Pieces, friendly to beginners >w<
 
